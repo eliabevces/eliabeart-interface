@@ -48,12 +48,8 @@ const Album: React.FC<AlbumProps> = ({ params }) => {
   return (
     <div className="grid grid-cols-5 grid-rows-N items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       {imagesNames?.map((imageName: string, index: number) => (
-        <>
-          <div
-            key={index}
-            className="relative w-80 h-80"
-            onClick={() => openModal(index)}
-          >
+        <div key={index}>
+          <div className="relative w-80 h-80" onClick={() => openModal(index)}>
             <Image
               width={300}
               height={300}
@@ -103,7 +99,7 @@ const Album: React.FC<AlbumProps> = ({ params }) => {
               </div>
             </div>
           )}
-        </>
+        </div>
       ))}
     </div>
   );
