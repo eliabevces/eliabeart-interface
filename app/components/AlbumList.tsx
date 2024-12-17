@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 interface AlbumListProps {
   albums: { id: string; nome: string; cover: string }[];
@@ -14,7 +15,7 @@ const AlbumList: React.FC<AlbumListProps> = ({ albums }) => {
         <>
           <Link key={album.id} href={`/album/${album.id}`} legacyBehavior>
             <a className="flex flex-col items-center text-center bg-white rounded-lg shadow-md transition-transform transform hover:-translate-y-1 hover:shadow-lg">
-              <img
+              <Image
                 className="w-48 h-48 object-cover rounded-t-lg"
                 src={
                   process.env.NEXT_PUBLIC_API_URL +
@@ -22,6 +23,8 @@ const AlbumList: React.FC<AlbumListProps> = ({ albums }) => {
                   "http://placekitten.com/300/300"
                 }
                 alt={album.nome}
+                width={300}
+                height={300}
               />
               <h2 className="mt-4 mb-2 text-lg font-semibold">{album.nome}</h2>
             </a>

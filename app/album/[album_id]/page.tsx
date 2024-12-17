@@ -21,9 +21,6 @@ interface Photo {
 
 const Album: React.FC<AlbumProps> = ({ params }) => {
   const [images, setImages] = React.useState<Photo[] | null>(null);
-  const [loadedImages, setLoadedImages] = React.useState<{
-    [key: string]: boolean;
-  }>({});
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [currentImageIndex, setCurrentImageIndex] = React.useState<
     number | null
