@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { get_album_photos } from "@/app/lib/api";
+import { blurhashToBase64 } from "blurhash-base64";
 
 interface AlbumProps {
   params: {
@@ -10,8 +11,16 @@ interface AlbumProps {
   };
 }
 
+interface Photo {
+  id: number;
+  descricao: string;
+  album_id: number;
+  nome: string;
+  hash: string;
+}
+
 const Album: React.FC<AlbumProps> = ({ params }) => {
-  const [imagesNames, setImagesNames] = React.useState<string[]>([]);
+  const [images, setImages] = React.useState<Photo[] | null>(null);
   const [loadedImages, setLoadedImages] = React.useState<{
     [key: string]: boolean;
   }>({});
@@ -23,9 +32,7 @@ const Album: React.FC<AlbumProps> = ({ params }) => {
   React.useEffect(() => {
     const setarImagens = async () => {
       const photos = await get_album_photos(params.album_id);
-      if (Array.isArray(photos)) {
-        setImagesNames(photos);
-      }
+      setImages(photos);
     };
 
     setarImagens();
@@ -41,40 +48,29 @@ const Album: React.FC<AlbumProps> = ({ params }) => {
     setCurrentImageIndex(null);
   };
 
-  const handleImageLoad = (imageName: string) => {
-    setLoadedImages((prev) => ({ ...prev, [imageName]: true }));
-  };
-
   return (
-    <div className="grid grid-cols-5 grid-rows-N items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      {imagesNames?.map((imageName: string, index: number) => (
+    <div className="grid grid-cols-5 grid-rows-N items-center justify-items-center min-h-screen p-8 pb-20 gap-10 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+      {images?.map(({ nome: imageName }, index) => (
         <div key={index}>
-          <div className="relative w-80 h-80" onClick={() => openModal(index)}>
+          <div
+            className="relative w-80 h-80 cursor-pointer"
+            onClick={() => openModal(index)}
+          >
             <Image
-              width={300}
-              height={300}
-              alt="Thumbnail"
-              src={`http://127.0.0.1:8000/publicos/${params.album_id}/${imageName}?thumbnail=true`}
-              className={`object-cover w-80 h-80 transition-opacity duration-500 ${
-                loadedImages[imageName] ? "opacity-0" : "opacity-100"
-              }`}
-              loading="lazy"
-            />
-            <Image
-              width={300}
-              height={300}
-              alt="Image"
+              width={700}
+              height={700}
+              alt={images[index].descricao}
               src={`http://127.0.0.1:8000/publicos/${params.album_id}/${imageName}`}
-              className={`object-cover w-80 h-80 absolute top-0 left-0 transition-opacity duration-500 ${
-                loadedImages[imageName] ? "opacity-100" : "opacity-0"
-              }`}
+              blurDataURL={blurhashToBase64(images[index].hash)}
+              placeholder="blur"
               loading="lazy"
-              onLoad={() => handleImageLoad(imageName)}
+              className="object-cover w-80 h-80 absolute top-0 left-0 transition-opacity duration-500"
               onError={(e) => {
-                console.log(e);
+                console.error("Image failed to load:", e);
                 const target = e.target as HTMLImageElement;
-                target.src = `http://127.0.0.1:8000/publicos/${params.album_id}/${imageName}?w=${target.width}`;
+                target.src = `http://127.0.0.1:8000/publicos/${params.album_id}/${imageName}`;
               }}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           </div>
           {isModalOpen && currentImageIndex !== null && (
@@ -93,7 +89,7 @@ const Album: React.FC<AlbumProps> = ({ params }) => {
                   width={800}
                   height={800}
                   alt="Current Image"
-                  src={`http://127.0.0.1:8000/publicos/${params.album_id}/${imagesNames[currentImageIndex]}`}
+                  src={`http://127.0.0.1:8000/publicos/${params.album_id}/${images[currentImageIndex].nome}`}
                   className="object-contain max-w-full max-h-full"
                 />
               </div>
