@@ -11,19 +11,22 @@ const AlbumList: React.FC<AlbumListProps> = ({ albums }) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6">
       {albums.map((album) => (
-        <Link key={album.id} href={`/album/${album.id}`} legacyBehavior>
-          <a className="flex flex-col items-center text-center bg-white rounded-lg shadow-md transition-transform transform hover:-translate-y-1 hover:shadow-lg">
-            <img
-              className="w-48 h-48 object-cover rounded-t-lg"
-              src={
-                `http://127.0.0.1:8000/publicos/${album.id}/${album.cover}` ||
-                "http://placekitten.com/300/300"
-              }
-              alt={album.nome}
-            />
-            <h2 className="mt-4 mb-2 text-lg font-semibold">{album.nome}</h2>
-          </a>
-        </Link>
+        <>
+          <Link key={album.id} href={`/album/${album.id}`} legacyBehavior>
+            <a className="flex flex-col items-center text-center bg-white rounded-lg shadow-md transition-transform transform hover:-translate-y-1 hover:shadow-lg">
+              <img
+                className="w-48 h-48 object-cover rounded-t-lg"
+                src={
+                  process.env.NEXT_PUBLIC_API_URL +
+                    `/publicos/${album.id}/${album.cover}` ||
+                  "http://placekitten.com/300/300"
+                }
+                alt={album.nome}
+              />
+              <h2 className="mt-4 mb-2 text-lg font-semibold">{album.nome}</h2>
+            </a>
+          </Link>
+        </>
       ))}
     </div>
   );

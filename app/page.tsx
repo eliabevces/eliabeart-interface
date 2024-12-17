@@ -2,7 +2,7 @@ import React from "react";
 import AlbumList from "./components/AlbumList";
 
 export default async function Home() {
-  const response = await fetch("http://127.0.0.1:8000/publicos", {
+  const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/publicos", {
     cache: "no-store",
   });
   const data = await response.json();

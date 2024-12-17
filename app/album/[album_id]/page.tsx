@@ -60,7 +60,10 @@ const Album: React.FC<AlbumProps> = ({ params }) => {
               width={700}
               height={700}
               alt={images[index].descricao}
-              src={`http://127.0.0.1:8000/publicos/${params.album_id}/${imageName}`}
+              src={
+                process.env.NEXT_PUBLIC_API_URL +
+                `/publicos/${params.album_id}/${imageName}`
+              }
               blurDataURL={blurhashToBase64(images[index].hash)}
               placeholder="blur"
               loading="lazy"
@@ -68,7 +71,9 @@ const Album: React.FC<AlbumProps> = ({ params }) => {
               onError={(e) => {
                 console.error("Image failed to load:", e);
                 const target = e.target as HTMLImageElement;
-                target.src = `http://127.0.0.1:8000/publicos/${params.album_id}/${imageName}`;
+                target.src =
+                  process.env.NEXT_PUBLIC_API_URL +
+                  `/publicos/${params.album_id}/${imageName}`;
               }}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
@@ -89,7 +94,10 @@ const Album: React.FC<AlbumProps> = ({ params }) => {
                   width={800}
                   height={800}
                   alt="Current Image"
-                  src={`http://127.0.0.1:8000/publicos/${params.album_id}/${images[currentImageIndex].nome}`}
+                  src={
+                    process.env.NEXT_PUBLIC_API_URL +
+                    `/publicos/${params.album_id}/${images[currentImageIndex].nome}`
+                  }
                   className="object-contain max-w-full max-h-full"
                 />
               </div>

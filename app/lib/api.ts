@@ -1,6 +1,7 @@
 export const get_album_photos = async (album_id: string) => {
   try {
-    const response = await fetch(`http://127.0.0.1:8000/publicos/${album_id}`, {
+    console.log(process.env.NEXT_PUBLIC_API_URL + `/publicos/${album_id}`);
+    const response = await fetch(process.env.NEXT_PUBLIC_API_URL + `/publicos/${album_id}`, {
       cache: "no-store",
     });
     const data = await response.json();
