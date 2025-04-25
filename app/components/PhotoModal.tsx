@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Image from "next/image";
+import { blurhashToBase64 } from "blurhash-base64";
 
 interface PhotoModalProps {
   isOpen: boolean;
@@ -66,7 +67,7 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
               `/publicos/${album_id}/${images[index].nome}` || ""
           }
           placeholder="blur"
-          blurDataURL={images[index].hash}
+          blurDataURL={blurhashToBase64(images[index].hash)}
           className="object-contain max-w-full max-h-full"
           loading="lazy"
         />

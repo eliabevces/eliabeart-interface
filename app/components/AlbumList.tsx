@@ -10,13 +10,13 @@ const AlbumList: React.FC<AlbumListProps> = ({ albums }) => {
   if (!Array.isArray(albums)) return <></>;
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6">
-      {albums.map((album) => (
-        <>
-          <Link key={album.id} href={`/album/${album.id}`} legacyBehavior>
+    <div className="flex overflow-x-scroll space-x-6 p-6 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 w-full container">
+      {albums.map((album, index) => (
+        <div key={index} className="flex-shrink-0 w-80">
+          <Link href={`/album/${album.id}`} legacyBehavior>
             <a className="flex flex-col items-center text-center bg-white rounded-lg shadow-md transition-transform transform hover:-translate-y-1 hover:shadow-lg">
               <Image
-                className="w-48 h-48 object-cover rounded-t-lg"
+                className="w-80 h-96 object-cover rounded-t-lg"
                 src={
                   process.env.NEXT_PUBLIC_API_URL +
                     `/publicos/${album.id}/${album.cover}` || ""
@@ -28,7 +28,7 @@ const AlbumList: React.FC<AlbumListProps> = ({ albums }) => {
               <h2 className="mt-4 mb-2 text-lg font-semibold">{album.nome}</h2>
             </a>
           </Link>
-        </>
+        </div>
       ))}
     </div>
   );
