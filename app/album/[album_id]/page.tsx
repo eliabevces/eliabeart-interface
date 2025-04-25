@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { get_album_photos } from "@/app/lib/api";
 import { blurhashToBase64 } from "blurhash-base64";
+import PhotoModal from "@/app/components/PhotoModal";
 
 interface AlbumProps {
   params: {
@@ -50,8 +51,10 @@ const Album: React.FC<AlbumProps> = ({ params }) => {
       {images?.map(({ nome: imageName }, index) => (
         <div key={index}>
           <div
-            className="relative w-80 h-80 cursor-pointer"
-            onClick={() => openModal(index)}
+            className="relative w-80 h-150 cursor-pointer"
+            onClick={() => {
+              openModal(index);
+            }}
           >
             <Image
               width={700}
@@ -64,7 +67,7 @@ const Album: React.FC<AlbumProps> = ({ params }) => {
               blurDataURL={blurhashToBase64(images[index].hash)}
               placeholder="blur"
               loading="lazy"
-              className="object-cover w-80 h-80 absolute top-0 left-0 transition-opacity duration-500"
+              className="object-cover w-80 h-150 transition-opacity duration-500"
               onError={(e) => {
                 console.error("Image failed to load:", e);
                 const target = e.target as HTMLImageElement;
@@ -75,31 +78,13 @@ const Album: React.FC<AlbumProps> = ({ params }) => {
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           </div>
-          {isModalOpen && currentImageIndex !== null && (
-            <div
-              className="fixed inset-0 bg-white bg-opacity-5 flex items-center justify-center z-50"
-              onClick={closeModal}
-            >
-              <button
-                className="absolute top-4 right-4 text-white"
-                onClick={closeModal}
-              >
-                Close
-              </button>
-              <div className="relative" onClick={(e) => e.stopPropagation()}>
-                <Image
-                  width={800}
-                  height={800}
-                  alt="Current Image"
-                  src={
-                    process.env.NEXT_PUBLIC_API_URL +
-                    `/publicos/${params.album_id}/${images[currentImageIndex].nome}`
-                  }
-                  className="object-contain max-w-full max-h-full"
-                />
-              </div>
-            </div>
-          )}
+          <PhotoModal
+            isOpen={isModalOpen && currentImageIndex === index}
+            onClose={closeModal}
+            images={images}
+            index={index}
+            album_id={params.album_id}
+          />
         </div>
       ))}
     </div>

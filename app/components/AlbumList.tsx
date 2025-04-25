@@ -19,10 +19,9 @@ const AlbumList: React.FC<AlbumListProps> = ({ albums }) => {
                 className="w-48 h-48 object-cover rounded-t-lg"
                 src={
                   process.env.NEXT_PUBLIC_API_URL +
-                    `/publicos/${album.id}/${album.cover}` ||
-                  "http://placekitten.com/300/300"
+                    `/publicos/${album.id}/${album.cover}` || ""
                 }
-                alt={album.nome}
+                alt={album.nome || ""}
                 width={300}
                 height={300}
               />
