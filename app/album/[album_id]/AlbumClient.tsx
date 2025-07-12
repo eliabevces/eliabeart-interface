@@ -2,19 +2,10 @@
 import React from "react";
 import PhotoModal from "@components/PhotoModal";
 import Photo from "@components/Photo";
-
-interface Photo {
-  id: number;
-  descricao: string;
-  album_id: number;
-  nome: string;
-  hash: string;
-  width: number;
-  height: number;
-}
+import { Foto } from "@/app/types/Foto";
 
 interface AlbumClientProps {
-  images: Photo[];
+  images: Foto[];
   album_id: string;
 }
 
