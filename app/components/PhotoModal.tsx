@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Photo from "./Photo";
 
 const FILE_EXTENSION_REGEX = /\.[a-zA-Z0-9]+$/;
@@ -22,6 +22,13 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+
+  // Sync index with initialIndex when modal opens or initialIndex changes
+  useEffect(() => {
+    if (isOpen) {
+      setIndex(initialIndex);
+    }
+  }, [isOpen, initialIndex]);
 
   // Minimum distance for a swipe
   const minSwipeDistance = 50;
@@ -140,7 +147,7 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
           )}
         </div>
         <button
-          className="absolute top-2 md:top-4 left-2 md:left-4 text-white text-xl md:text-2xl hover: transform transition-transform duration-100 hover:scale-150"
+          className="absolute top-2 md:top-4 left-2 md:left-4 text-white text-xl md:text-2xl hover:text-gray-300 transform transition-transform duration-100 hover:scale-150"
           onClick={(e) => {
             e.stopPropagation();
             setDropdownOpen(false);
