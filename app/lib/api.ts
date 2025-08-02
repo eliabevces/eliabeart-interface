@@ -30,7 +30,8 @@ export const get_album_photos = async (album_id: string) => {
 
 export const get_albuns = async () => {
   // Return empty array during build if API is not available
-  if (isBuilding) {
+  if (!process.env.NEXT_PUBLIC_API_URL) {
+    console.warn("NEXT_PUBLIC_API_URL is not set. Cannot fetch album photos.");
     return [];
   }
 
