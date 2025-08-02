@@ -3,15 +3,15 @@ import Link from "next/link";
 import Photo from "@components/Photo";
 
 interface AlbumListProps {
-  albums: { id: string; nome: string; cover: string }[];
+  albuns: { id: string; nome: string; cover: string }[];
 }
 
-const AlbumList: React.FC<AlbumListProps> = ({ albums }) => {
-  if (!Array.isArray(albums)) return <></>;
+const AlbumList: React.FC<AlbumListProps> = ({ albuns }) => {
+  if (!Array.isArray(albuns)) return <></>;
 
   return (
     <div className="flex items-center justify-center">
-      {albums.map((album, index) => (
+      {albuns.map((album, index) => (
         <div key={index} className="flex-shrink-0 w-80">
           <Link href={`/album/${album.id}`} legacyBehavior>
             <a className="flex flex-col items-center text-center bg-white rounded-lg shadow-lg transition-transform transform hover:-translate-y-1 hover:shadow-2xl border-2 border-gray-200 p-4">

@@ -23,7 +23,7 @@ const Photo = ({
     height={height}
     src={
       process.env.NEXT_PUBLIC_API_URL +
-      `/images/publicos/${album_id}/${imageName}`
+      `/images/${album_id}/${imageName}`
     }
     alt={descricao || "Image description"}
     blurDataURL={blurhashToBase64(hash || "")}

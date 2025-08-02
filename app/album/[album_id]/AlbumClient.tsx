@@ -15,10 +15,6 @@ const AlbumClient: React.FC<AlbumClientProps> = ({ images, album_id }) => {
     number | null
   >(null);
 
-  React.useEffect(() => {
-    console.log(images);
-  }, []);
-
   const openModal = (index: number) => {
     setCurrentImageIndex(index);
     setIsModalOpen(true);
@@ -53,8 +49,8 @@ const AlbumClient: React.FC<AlbumClientProps> = ({ images, album_id }) => {
                 descricao={images[index].descricao}
                 hash={images[index].hash}
                 album_id={Number(album_id)}
-                width={images[index].width || 700}
-                height={images[index].height || 300}
+                width={images[index].width}
+                height={images[index].height}
                 className="object-cover w-full h-auto transition-transform duration-500 group-hover:scale-105"
               />
             </div>

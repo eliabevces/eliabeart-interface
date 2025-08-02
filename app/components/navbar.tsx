@@ -47,19 +47,6 @@ const Navbar: React.FC = () => {
           />
         </button>
       )}
-
-      {pathName.startsWith("/album/") &&
-        (() => {
-          const album_id = pathName.split("/")[2];
-          return (
-            <Link
-              href={`/album/${album_id}/upload`}
-              className="text-lg font-semibold hover:text-gray-600 transition-colors duration-300 ease-in-out"
-            >
-              Upload to Album
-            </Link>
-          );
-        })()}
     </nav>
   );
 };

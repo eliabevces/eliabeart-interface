@@ -1,29 +1,54 @@
 import { Foto } from "@/app/types/Foto";
-import type { User } from "@/app/types/auth";
 
+// Check if we're in build mode or if API is available
+const isBuilding = process.env.NODE_ENV === 'production' && !process.env.NEXT_PUBLIC_API_URL;
 
 export const get_album_photos = async (album_id: string) => {
+  // Return empty array during build if API is not available
+  if (isBuilding) {
+    return [];
+  }
+
   try {
-    console.log(process.env.NEXT_PUBLIC_API_URL + `/publicos/${album_id}`);
-    const response = await fetch(process.env.NEXT_PUBLIC_API_URL + `/images/publicos/${album_id}`, {
-      cache: "no-store",
+    console.log(process.env.NEXT_PUBLIC_API_URL + `/${album_id}`);
+    const response = await fetch(process.env.NEXT_PUBLIC_API_URL + `/images/${album_id}`, {
+      next: { revalidate: 60 }, // Cache for 60 seconds
     });
+    
+    if (!response.ok) {
+      console.warn(`Failed to fetch album photos for album ${album_id}: ${response.status}`);
+      return [];
+    }
+    
     const data = await response.json();
-    return data?.fotos;
+    return data?.images || [];
   } catch (error) {
     console.error("Fetch error:", error);
+    return [];
   }
 }
 
-export const get_albums_publicos = async () => {
+export const get_albuns = async () => {
+  // Return empty array during build if API is not available
+  if (isBuilding) {
+    return [];
+  }
+
   try {
-    const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/albums/publicos", {
-      cache: "no-store",
+    const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/albuns", {
+      next: { revalidate: 300 }, // Cache for 5 minutes
     });
+    
+    if (!response.ok) {
+      console.warn(`Failed to fetch albums: ${response.status}`);
+      return [];
+    }
+    
     const data = await response.json();
-    return data?.albuns;
+    return data?.albuns || [];
   } catch (error) {
     console.error("Fetch error:", error);
+    return [];
   }
 }
 export const post_album_photos = async (album_id: string, file: File) => {
@@ -50,7 +75,7 @@ export const post_album_photos = async (album_id: string, file: File) => {
 export const random_photo = async (): Promise<Omit<Foto, "id"> | null> => {
   try {
     const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/images/random", {
-      cache: "no-store",
+      cache: "no-store", // Keep no-store for random endpoint as it should always be different
     });
     const data = await response.json();
     return data;
@@ -60,41 +85,3 @@ export const random_photo = async (): Promise<Omit<Foto, "id"> | null> => {
   }
 }
 
-export const login = async (username: string, password: string) => {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-  const response = await fetch(`${apiUrl}/auth/login`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ username, password }),
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || "Login failed");
-  }
-
-  return await response.json();
-}
-
-
-export async function verifyAuthAndFetchUser(): Promise<User | null> {
-  try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-    const response = await fetch(`${apiUrl}/auth/status`, {
-      headers: {},
-      cache: 'no-store',
-    });
-    console.log("Response from FastAPI auth check:", response.status);
-    if (response.ok) {
-
-      const userData: User = await response.json();
-      return userData;
-    }
-    return null;
-  } catch (error) {
-    console.error('Error verifying auth or fetching user:', error);
-    return null;
-  }
-}

@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import Photo from "./Photo";
+
+const FILE_EXTENSION_REGEX = /\.[a-zA-Z0-9]+$/;
+
 interface PhotoModalProps {
   isOpen: boolean;
   onClose: () => void;
   index: number;
-  images: { nome: string; hash: string }[];
+  images: { nome: string; hash: string; width: number; height: number }[];
   album_id: string;
 }
 
@@ -17,11 +20,41 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
 }) => {
   const [index, setIndex] = useState(initialIndex);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+
+  // Minimum distance for a swipe
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null); // Reset touch end
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe && index < images.length - 1) {
+      setIndex(index + 1);
+    }
+    if (isRightSwipe && index > 0) {
+      setIndex(index - 1);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
     <div
-      className="fixed inset-0 bg-white bg-opacity-70 flex items-center justify-center z-50 transition-opacity duration-300 ease-in-out"
+      className="fixed inset-0 bg-white bg-opacity-70 flex items-center justify-center z-50 transition-opacity duration-300 ease-in-out p-4"
       onClick={onClose}
       tabIndex={0}
       onKeyDown={(e) => {
@@ -41,7 +74,7 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
     >
       {index > 0 && (
         <button
-          className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-black text-white p-2 rounded-full shadow-md hover:bg-gray-800 transform transition-transform duration-300 hover:scale-150 ease-in-out"
+          className="absolute top-1/2 left-2 md:left-4 transform -translate-y-1/2 bg-black text-white p-1 md:p-2 rounded-full shadow-md hover:bg-gray-800 transform transition-transform duration-300 hover:scale-150 ease-in-out text-sm md:text-base"
           onClick={(e) => {
             e.stopPropagation();
             if (index > 0) {
@@ -55,10 +88,13 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
       <div
         className="relative transition-transform duration-300 ease-in-out hover:text-gray-700 shadow-lg"
         onClick={(e) => e.stopPropagation()}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
       >
         <div>
           <button
-            className="absolute top-1 right-4 text-white text-2xl transform transition-transform duration-100 hover:scale-150"
+            className="absolute top-1 right-2 md:right-4 text-white text-xl md:text-2xl transform transition-transform duration-100 hover:scale-150"
             onClick={(e) => {
               e.stopPropagation();
               setDropdownOpen((prev) => !prev);
@@ -76,17 +112,17 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
                     setDropdownOpen(false);
                     fetch(
                       process.env.NEXT_PUBLIC_API_URL +
-                        `/images/publicos/${album_id}/${images[index].nome}`
+                        `/images/${album_id}/${images[index].nome}`
                     )
                       .then((response) => response.blob())
                       .then((blob) => {
-                        const imageBlob = new Blob([blob], {
-                          type: "image/jpeg",
-                        });
-                        const url = window.URL.createObjectURL(imageBlob);
+                        const url = window.URL.createObjectURL(blob);
                         const link = document.createElement("a");
                         link.href = url;
-                        link.download = images[index].nome;
+                        const fileName = FILE_EXTENSION_REGEX.test(images[index].nome)
+                          ? images[index].nome
+                          : `${images[index].nome}.jpg`;
+                        link.download = fileName;
                         document.body.appendChild(link);
                         link.click();
                         document.body.removeChild(link);
@@ -104,13 +140,13 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
           )}
         </div>
         <button
-          className="absolute top-4 left-4 text-white text-2xl hover: transform transition-transform duration-100 hover:scale-150"
+          className="absolute top-2 md:top-4 left-2 md:left-4 text-white text-xl md:text-2xl hover: transform transition-transform duration-100 hover:scale-150"
           onClick={(e) => {
             e.stopPropagation();
             setDropdownOpen(false);
             const newTab = window.open(
               process.env.NEXT_PUBLIC_API_URL +
-                `/images/publicos/${album_id}/${images[index].nome}`,
+                `/images/${album_id}/${images[index].nome}`,
               "_blank"
             );
             if (newTab) {
@@ -127,14 +163,14 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
           descricao={""}
           hash={images[index].hash}
           album_id={Number(album_id)}
-          width={800}
-          height={800}
-          className="object-contain max-w-xl max-h-xl"
+          width={images[index].width}
+          height={images[index].height}
+          className="object-contain w-full h-full max-w-[90vw] max-h-[90vh] md:max-w-2xl md:max-h-2xl"
         />
       </div>
       {index < images.length - 1 && (
         <button
-          className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-black text-white p-2 rounded-full shadow-md hover:bg-gray-800 transform transition-transform duration-300 hover:scale-150 ease-in-out"
+          className="absolute top-1/2 right-2 md:right-4 transform -translate-y-1/2 bg-black text-white p-1 md:p-2 rounded-full shadow-md hover:bg-gray-800 transform transition-transform duration-300 hover:scale-150 ease-in-out text-sm md:text-base"
           onClick={(e) => {
             e.stopPropagation();
             if (index < images.length - 1) {
