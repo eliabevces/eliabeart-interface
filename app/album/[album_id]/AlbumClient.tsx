@@ -2,19 +2,10 @@
 import React from "react";
 import PhotoModal from "@components/PhotoModal";
 import Photo from "@components/Photo";
-
-interface Photo {
-  id: number;
-  descricao: string;
-  album_id: number;
-  nome: string;
-  hash: string;
-  width: number;
-  height: number;
-}
+import { Foto } from "@/app/types/Foto";
 
 interface AlbumClientProps {
-  images: Photo[];
+  images: Foto[];
   album_id: string;
 }
 
@@ -23,10 +14,6 @@ const AlbumClient: React.FC<AlbumClientProps> = ({ images, album_id }) => {
   const [currentImageIndex, setCurrentImageIndex] = React.useState<
     number | null
   >(null);
-
-  React.useEffect(() => {
-    console.log(images);
-  }, []);
 
   const openModal = (index: number) => {
     setCurrentImageIndex(index);
@@ -62,8 +49,8 @@ const AlbumClient: React.FC<AlbumClientProps> = ({ images, album_id }) => {
                 descricao={images[index].descricao}
                 hash={images[index].hash}
                 album_id={Number(album_id)}
-                width={images[index].width || 700}
-                height={images[index].height || 300}
+                width={images[index].width}
+                height={images[index].height}
                 className="object-cover w-full h-auto transition-transform duration-500 group-hover:scale-105"
               />
             </div>

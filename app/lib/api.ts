@@ -1,25 +1,55 @@
+import { Foto } from "@/app/types/Foto";
+
+// Check if API is available
+
+
 export const get_album_photos = async (album_id: string) => {
+  if (!process.env.NEXT_PUBLIC_API_URL) {
+    console.warn("NEXT_PUBLIC_API_URL is not set. Cannot fetch album photos.");
+    return [];
+  }
+
   try {
-    console.log(process.env.NEXT_PUBLIC_API_URL + `/publicos/${album_id}`);
-    const response = await fetch(process.env.NEXT_PUBLIC_API_URL + `/images/publicos/${album_id}`, {
-      cache: "no-store",
+    console.log(process.env.NEXT_PUBLIC_API_URL + `/${album_id}`);
+    const response = await fetch(process.env.NEXT_PUBLIC_API_URL + `/images/${album_id}`, {
+      next: { revalidate: 60 }, // Cache for 60 seconds
     });
+    
+    if (!response.ok) {
+      console.warn(`Failed to fetch album photos for album ${album_id}: ${response.status}`);
+      return [];
+    }
+    
     const data = await response.json();
-    return data?.fotos;
+    return data?.images || [];
   } catch (error) {
     console.error("Fetch error:", error);
+    return [];
   }
 }
 
-export const get_albums_publicos = async () => {
+export const get_albuns = async () => {
+  // Return empty array during build if API is not available
+  if (!process.env.NEXT_PUBLIC_API_URL) {
+    console.warn("NEXT_PUBLIC_API_URL is not set. Cannot fetch album photos.");
+    return [];
+  }
+
   try {
-    const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/albums/publicos", {
-      cache: "no-store",
+    const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/albuns", {
+      next: { revalidate: 300 }, // Cache for 5 minutes
     });
+    
+    if (!response.ok) {
+      console.warn(`Failed to fetch albums: ${response.status}`);
+      return [];
+    }
+    
     const data = await response.json();
-    return data?.albuns;
+    return data?.albuns || [];
   } catch (error) {
     console.error("Fetch error:", error);
+    return [];
   }
 }
 export const post_album_photos = async (album_id: string, file: File) => {
@@ -43,13 +73,16 @@ export const post_album_photos = async (album_id: string, file: File) => {
   }
 }
 
-export const random_photo = async () => {
+export const random_photo = async (): Promise<Omit<Foto, "id"> | null> => {
   try {
     const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/images/random", {
-      cache: "no-store",
+      cache: "no-store", // Keep no-store for random endpoint as it should always be different
     });
-    return response.json();
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.error("Fetch error:", error);
+    return null;
   }
 }
+
