@@ -9,9 +9,8 @@ let remotePattern;
 try {
   const url = new URL(apiUrl);
   remotePattern = {
-    protocol: url.protocol.slice(0, -1), // Remove the trailing colon
+    protocol: url.protocol.replace(':', ''), // Remove the trailing colon
     hostname: url.hostname,
-        protocol: url.protocol.replace(':', ''), // Remove the trailing colon
   };
 } catch (error) {
   console.error("Invalid NEXT_PUBLIC_API_URL:", apiUrl, error);

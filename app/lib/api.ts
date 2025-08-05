@@ -53,11 +53,7 @@ export const get_albuns = async () => {
 
 export const random_photo = async (): Promise<Omit<Foto, "id"> | null> => {
   try {
-    if (!process.env.NEXT_PUBLIC_API_URL) {
-      console.warn("NEXT_PUBLIC_API_URL is not set. Cannot fetch album photos.");
-      return null;
-    }
-    const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/images/random", {
+    const response = await fetch("/api/random-photo", {
       next: { revalidate: 60 },
     });
     
