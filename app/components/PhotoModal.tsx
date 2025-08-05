@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Photo from "./Photo";
 
-const FILE_EXTENSION_REGEX = /\.[a-zA-Z0-9]+$/;
-
 interface PhotoModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -117,27 +115,14 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
                   onClick={(e) => {
                     e.stopPropagation();
                     setDropdownOpen(false);
-                    fetch(
-                      process.env.NEXT_PUBLIC_API_URL +
-                        `/images/${album_id}/${images[index].nome}`
-                    )
-                      .then((response) => response.blob())
-                      .then((blob) => {
-                        const url = window.URL.createObjectURL(blob);
-                        const link = document.createElement("a");
-                        link.href = url;
-                        const fileName = FILE_EXTENSION_REGEX.test(images[index].nome)
-                          ? images[index].nome
-                          : `${images[index].nome}.jpg`;
-                        link.download = fileName;
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                        window.URL.revokeObjectURL(url);
-                      })
-                      .catch((error) =>
-                        console.error("Download failed:", error)
-                      );
+                    
+                    const downloadUrl = `/api/download?album_id=${album_id}&image_name=${encodeURIComponent(images[index].nome)}`;
+                    const link = document.createElement("a");
+                    link.href = downloadUrl;
+                    link.download = ""; // Let the server set the filename
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
                   }}
                 >
                   Download
